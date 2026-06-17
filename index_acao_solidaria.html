@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ação Solidária | Elias</title>
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --paper: #fffaf2;
+      --brown: #4a2d1f;
+      --brown-2: #6b422d;
+      --gold: #d69b3a;
+      --green: #2e7d32;
+      --red: #b42318;
+      --muted: #7b6a5f;
+      --line: rgba(74, 45, 31, .14);
+      --shadow: 0 18px 50px rgba(74, 45, 31, .12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(214, 155, 58, .18), transparent 32%),
+        linear-gradient(180deg, #fffaf2 0%, var(--bg) 100%);
+      color: var(--brown);
+      min-height: 100vh;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 26px 0 14px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 250, 242, .86);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      font-size: 18px;
+    }
+
+    .loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #4b2e1f;
+  font-weight: 700;
+}
+
+.loading-overlay.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 46px;
+  height: 46px;
+  border: 5px solid rgba(75, 46, 31, 0.18);
+  border-top-color: #4b2e1f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--brown), var(--gold));
+      box-shadow: 0 10px 20px rgba(74, 45, 31, .16);
+      flex: 0 0 auto;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--brown);
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(74, 45, 31, .08);
+      border: 1px solid var(--line);
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(74, 45, 31, .12); }
+    .btn.primary { background: var(--brown); color: #fff; border-color: var(--brown); }
+    .btn.gold { background: var(--gold); color: #23150f; border-color: var(--gold); }
+    .btn.green { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn.danger { background: #fff5f4; color: var(--red); border-color: rgba(180, 35, 24, .22); }
+    .btn.small { padding: 9px 13px; font-size: 13px; }
+    .btn.full { width: 100%; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    main { padding: 28px 0 56px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-top: 10px;
+    }
+
+    .card {
+      background: rgba(255, 250, 242, .9);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .hero-main {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(214, 155, 58, .18);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(214, 155, 58, .16);
+      color: var(--brown-2);
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: .96;
+      letter-spacing: -.065em;
+      margin: 0 0 16px;
+      max-width: 780px;
+    }
+
+    .lead {
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 700px;
+      margin: 0 0 24px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .metric {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -.04em;
+      margin-bottom: 3px;
+    }
+
+    .metric span { color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    .pix-box {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .pix-key {
+      background: #fff;
+      border: 1px dashed rgba(74, 45, 31, .3);
+      border-radius: 18px;
+      padding: 15px;
+      word-break: break-all;
+      font-weight: 900;
+      line-height: 1.35;
+      color: var(--brown-2);
+    }
+
+    .notice {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(46, 125, 50, .08);
+      border: 1px solid rgba(46, 125, 50, .18);
+      color: #245b28;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .section-title {
+      margin: 28px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .section-title h2 {
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: -.055em;
+      margin: 0;
+    }
+
+    .section-title p { margin: 6px 0 0; color: var(--muted); }
+
+    .panels { display: grid; gap: 18px; }
+    .hidden { display: none !important; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--brown-2);
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 13px 14px;
+      background: #fff;
+      color: var(--brown);
+      outline: none;
+      transition: .18s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(214, 155, 58, .8);
+      box-shadow: 0 0 0 4px rgba(214, 155, 58, .15);
+    }
+
+    .field { margin-bottom: 13px; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .number-pill {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--brown);
+      border-radius: 14px;
+      min-height: 44px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .number-pill:hover { transform: translateY(-1px); border-color: rgba(214, 155, 58, .7); }
+    .number-pill.selected { background: var(--brown); color: #fff; border-color: var(--brown); }
+    .number-pill.sold { background: #eee6dc; color: #9b8a7d; text-decoration: line-through; cursor: not-allowed; transform: none; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      padding: 12px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(74, 45, 31, .09);
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(214, 155, 58, .13);
+      color: var(--brown-2);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(214, 155, 58, .16);
+      color: var(--brown-2);
+      white-space: nowrap;
+    }
+
+    .tag.green { background: rgba(46, 125, 50, .11); color: var(--green); }
+    .tag.red { background: rgba(180, 35, 24, .1); color: var(--red); }
+
+    .empty {
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,.6);
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      font-weight: 700;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: var(--brown);
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+      font-weight: 900;
+      z-index: 100;
+      transition: .22s ease;
+      max-width: min(92vw, 680px);
+      text-align: center;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .config {
+      margin-top: 26px;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--brown-2);
+      margin-bottom: 12px;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.45);
+      border-top-color: #fff;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 880px) {
+      .hero, .grid-2 { grid-template-columns: 1fr; }
+      .hero-grid, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .hero-main { padding: 24px; }
+      .nav { align-items: flex-start; }
+      .brand { font-size: 15px; }
+      .nav-actions .btn { padding: 10px 12px; font-size: 13px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <div class="mark">♥</div>
+        <div>
+          Ação Solidária<br />Elias
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button class="btn" onclick="showPanel('home')">Início</button>
+        <button class="btn gold" onclick="showPanel('sellerLogin')">Área do vendedor</button>
+        <button class="btn primary" onclick="showPanel('adminLogin')">Administrador</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="homePanel" class="panels">
+      <div class="hero">
+        <div class="card hero-main">
+          <div class="eyebrow">Ação entre amigos</div>
+          <h1>Ação Solidária pelo Elias</h1>
+          <p class="lead">Contribua com essa ação solidária escolhendo seus números com um dos vendedores. Cada número custa <strong>R$ 3,00</strong> e toda venda é registrada para controle da organização.</p>
+          <div class="row">
+            <button class="btn gold" onclick="copyPix()">Copiar chave Pix</button>
+            <button class="btn" onclick="showPanel('sellerLogin')">Registrar venda</button>
+          </div>
+          <div class="hero-grid">
+            <div class="metric"><strong id="homeSold">0</strong><span>números vendidos</span></div>
+            <div class="metric"><strong id="homeAmount">R$ 0,00</strong><span>arrecadados</span></div>
+            <div class="metric"><strong>800</strong><span>números totais</span></div>
+          </div>
+        </div>
+
+        <div class="card pix-box">
+          <div>
+            <div class="eyebrow">Pix oficial</div>
+            <h2 style="margin:0 0 8px; letter-spacing:-.04em;">Copie e cole a chave Pix</h2>
+            <p style="margin:0; color:var(--muted); line-height:1.45;">Após pagar, envie o comprovante para o vendedor confirmar seus números.</p>
+          </div>
+          <div class="pix-key" id="pixKey">fe075f81-f24f-43cf-9012-b596c9f1ff2a</div>
+          <button class="btn primary full" onclick="copyPix()">Copiar Pix</button>
+          <div class="notice">Importante: o número só será confirmado após o vendedor registrar a venda no sistema.</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <div>
+          <h2>Como funciona</h2>
+          <p>O vendedor combina pelo WhatsApp, confirma o pagamento e registra a venda.</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="card"><span class="tag">1</span><h3>Escolha seus números</h3><p style="color:var(--muted); line-height:1.5;">Fale com um vendedor e escolha os números disponíveis no lote dele.</p></div>
+        <div class="card"><span class="tag">2</span><h3>Faça o Pix</h3><p style="color:var(--muted); line-height:1.5;">Use a chave Pix da página e envie o comprovante para confirmação.</p></div>
+        <div class="card"><span class="tag">3</span><h3>Venda registrada</h3><p style="color:var(--muted); line-height:1.5;">O vendedor registra comprador, WhatsApp e números vendidos no sistema.</p></div>
+      </div>
+    </section>
+
+    <section id="sellerLoginPanel" class="panels hidden">
+      <div class="section-title">
+        <div>
+          <h2>Área do vendedor</h2>
+          <p>Entre com o código recebido pelo administrador para registrar suas vendas.</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:560px;">
+        <div class="field">
+          <label for="sellerCode">Código do vendedor</label>
+          <input id="sellerCode" placeholder="Ex: MELLYSSA-01" />
+        </div>
+        <button class="btn primary full" onclick="sellerLogin()">Entrar</button>
+      </div>
+    </section>
+
+    <section id="sellerPanel" class="panels hidden">
+      <div class="section-title">
+        <div>
+          <h2 id="sellerTitle">Meu lote</h2>
+          <p id="sellerSubtitle">Selecione os números vendidos e preencha os dados do comprador.</p>
+        </div>
+        <div class="row">
+          <button class="btn" onclick="reloadSeller()">Atualizar</button>
+          <button class="btn danger" onclick="logoutSeller()">Sair</button>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="metric"><strong id="sellerSold">0</strong><span>vendidos por mim</span></div>
+        <div class="metric"><strong id="sellerAvailable">10</strong><span>disponíveis</span></div>
+        <div class="metric"><strong id="sellerAmount">R$ 0,00</strong><span>arrecadados</span></div>
+        <div class="metric"><strong id="sellerLot">-</strong><span>meu lote</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0;">Números do lote</h3>
+          <p style="color:var(--muted); margin-top:-4px;">Clique nos números vendidos. Os já vendidos ficam bloqueados.</p>
+          <div id="sellerNumbers" class="numbers-grid"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;">Registrar venda</h3>
+          <div class="field">
+            <label for="buyerName">Nome do comprador</label>
+            <input id="buyerName" placeholder="Ex: Maria Silva" />
+          </div>
+          <div class="field">
+            <label for="buyerPhone">WhatsApp do comprador</label>
+            <input id="buyerPhone" placeholder="Ex: (31) 99999-9999" />
+          </div>
+          <div class="field">
+            <label for="paymentMethod">Forma de pagamento</label>
+            <select id="paymentMethod">
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+            </select>
+          </div>
+          <div class="notice" style="margin-bottom:14px;" id="salePreview">Selecione os números para ver o total.</div>
+          <button id="saveSaleBtn" class="btn green full" onclick="saveSale()">Salvar venda</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">Minhas vendas</h3>
+        <div id="sellerSalesTable"></div>
+      </div>
+    </section>
+
+    <section id="adminLoginPanel" class="panels hidden">
+      <div class="section-title">
+        <div>
+          <h2>Administrador</h2>
+          <p>Acesse para cadastrar vendedores, lotes e acompanhar os resultados.</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:620px;">
+        <div class="field">
+          <label for="adminPin">Senha/PIN do administrador</label>
+          <input id="adminPin" type="password" placeholder="Digite o PIN definido no Apps Script" />
+        </div>
+        <button class="btn primary full" onclick="adminLogin()">Entrar no painel</button>
+      </div>
+    </section>
+
+    <section id="adminPanel" class="panels hidden">
+      <div class="section-title">
+        <div>
+          <h2>Painel do administrador</h2>
+          <p>Controle geral da ação solidária.</p>
+        </div>
+        <div class="row">
+          <button class="btn" onclick="loadAdminState()">Atualizar</button>
+          <button class="btn danger" onclick="logoutAdmin()">Sair</button>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="metric"><strong id="adminAmount">R$ 0,00</strong><span>total arrecadado</span></div>
+        <div class="metric"><strong id="adminSold">0</strong><span>números vendidos</span></div>
+        <div class="metric"><strong id="adminAvailable">800</strong><span>números disponíveis</span></div>
+        <div class="metric"><strong id="adminTopSeller">-</strong><span>top vendedor</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0;">Cadastrar vendedor</h3>
+          <div class="field">
+            <label for="vendorName">Nome do vendedor</label>
+            <input id="vendorName" placeholder="Ex: Mellyssa" />
+          </div>
+          <div class="field">
+            <label for="vendorPhone">WhatsApp do vendedor</label>
+            <input id="vendorPhone" placeholder="Ex: (31) 99999-9999" />
+          </div>
+          <div class="field">
+            <label for="vendorLot">Lote de números</label>
+            <select id="vendorLot"></select>
+          </div>
+          <button class="btn gold full" onclick="createVendor()">Cadastrar vendedor</button>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;">Ranking de vendedores</h3>
+          <div id="rankingTable"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">Vendedores cadastrados</h3>
+        <div id="vendorsTable"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">Vendas registradas</h3>
+        <div id="salesTable"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>const PIX_KEY = 'fe075f81-f24f-43cf-9012-b596c9f1ff2a';
+const PRICE = 3;
+const TOTAL_NUMBERS = 800;
+const LOT_SIZE = 10;
+const TOTAL_LOTS = TOTAL_NUMBERS / LOT_SIZE;
+
+const API_URL_PADRAO = 'https://script.google.com/macros/s/AKfycbybow1DwR6yav-Tuf4eofqCWrpki9RRrNnRLbDSKnv9oBKhnxYPGxNe9nG8WSOGVbMpVA/exec';
+
+let apiUrl = localStorage.getItem('acaoSolidariaApiUrl') || API_URL_PADRAO;
+let adminPin = localStorage.getItem('acaoSolidariaAdminPin') || '';
+let sellerCode = localStorage.getItem('acaoSolidariaSellerCode') || '';
+let sellerState = null;
+let adminState = null;
+let selectedNumbers = new Set();
+
+document.getElementById('pixKey').textContent = PIX_KEY;
+
+if (document.getElementById('apiUrl')) {
+  document.getElementById('apiUrl').value = apiUrl;
+}
+
+document.getElementById('adminPin').value = adminPin;
+document.getElementById('sellerCode').value = sellerCode;
+
+function money(value) {
+  return Number(value || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+}
+
+function formatNumber(n) {
+  return String(n).padStart(3, '0');
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2600);
+}
+
+function showLoading(text = 'Carregando...') {
+  const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
+
+  const paragraph = overlay.querySelector('p');
+  if (paragraph) paragraph.textContent = text;
+
+  overlay.classList.remove('hidden');
+}
+
+function hideLoading() {
+  const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
+
+  overlay.classList.add('hidden');
+}
+
+function showPanel(name) {
+  const panels = ['home', 'sellerLogin', 'seller', 'adminLogin', 'admin'];
+
+  panels.forEach(panel => {
+    document.getElementById(panel + 'Panel').classList.add('hidden');
+  });
+
+  document.getElementById(name + 'Panel').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function copyPix() {
+  try {
+    await navigator.clipboard.writeText(PIX_KEY);
+    showToast('Chave Pix copiada!');
+  } catch (err) {
+    showToast('Copie a chave manualmente: ' + PIX_KEY);
+  }
+}
+
+async function copyText(text, message = 'Copiado!') {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(message);
+  } catch (err) {
+    showToast(text);
+  }
+}
+
+function saveApiUrl() {
+  const input = document.getElementById('apiUrl');
+  if (!input) return;
+
+  apiUrl = input.value.trim();
+  localStorage.setItem('acaoSolidariaApiUrl', apiUrl);
+
+  showToast('URL salva no navegador.');
+  loadPublicState();
+}
+
+async function apiGet(params = {}) {
+  if (!apiUrl) {
+    throw new Error('A URL do Apps Script não está configurada.');
+  }
+
+  const url = new URL(apiUrl);
+
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.set(key, value);
+  });
+
+  const res = await fetch(url.toString(), {
+    method: 'GET'
+  });
+
+  const data = await res.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Erro na solicitação.');
+  }
+
+  return data;
+}
+
+async function apiPost(payload = {}) {
+  if (!apiUrl) {
+    throw new Error('A URL do Apps Script não está configurada.');
+  }
+
+  const res = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Erro na solicitação.');
+  }
+
+  return data;
+}
+
+async function testConnection() {
+  showLoading('Testando conexão...');
+
+  try {
+    const data = await apiGet({ action: 'publicState' });
+    showToast('Conexão funcionando!');
+    updateHome(data);
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+async function loadPublicState() {
+  if (!apiUrl) return;
+
+  showLoading('Carregando dados da ação...');
+
+  try {
+    const data = await apiGet({ action: 'publicState' });
+    updateHome(data);
+  } catch (err) {
+    console.warn(err);
+  } finally {
+    hideLoading();
+  }
+}
+
+function updateHome(data) {
+  const sold = Number(data.soldCount || 0);
+  const amount = sold * PRICE;
+
+  document.getElementById('homeSold').textContent = sold;
+  document.getElementById('homeAmount').textContent = money(amount);
+}
+
+async function sellerLogin() {
+  sellerCode = document.getElementById('sellerCode').value.trim();
+
+  if (!sellerCode) {
+    return showToast('Digite o código do vendedor.');
+  }
+
+  localStorage.setItem('acaoSolidariaSellerCode', sellerCode);
+  await reloadSeller(true);
+}
+
+async function reloadSeller(goToPanel = false) {
+  showLoading('Carregando área do vendedor...');
+
+  try {
+    const data = await apiGet({
+      action: 'sellerState',
+      code: sellerCode
+    });
+
+    sellerState = data;
+    selectedNumbers.clear();
+
+    renderSeller();
+
+    if (goToPanel) {
+      showPanel('seller');
+    }
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+function logoutSeller() {
+  localStorage.removeItem('acaoSolidariaSellerCode');
+
+  sellerCode = '';
+  sellerState = null;
+
+  document.getElementById('sellerCode').value = '';
+  showPanel('sellerLogin');
+}
+
+function renderSeller() {
+  const vendor = sellerState.vendor;
+  const sales = sellerState.sales || [];
+  const soldNumbers = new Set((sellerState.soldNumbers || []).map(String));
+
+  const soldCount = soldNumbers.size;
+  const available = LOT_SIZE - soldCount;
+  const amount = soldCount * PRICE;
+
+  document.getElementById('sellerTitle').textContent = `Lote de ${vendor.nome}`;
+  document.getElementById('sellerSubtitle').textContent = `Números ${formatNumber(vendor.inicio)} a ${formatNumber(vendor.fim)} | Código: ${vendor.codigo}`;
+  document.getElementById('sellerSold').textContent = soldCount;
+  document.getElementById('sellerAvailable').textContent = available;
+  document.getElementById('sellerAmount').textContent = money(amount);
+  document.getElementById('sellerLot').textContent = `${formatNumber(vendor.inicio)}-${formatNumber(vendor.fim)}`;
+
+  const grid = document.getElementById('sellerNumbers');
+  grid.innerHTML = '';
+
+  for (let n = Number(vendor.inicio); n <= Number(vendor.fim); n++) {
+    const formatted = formatNumber(n);
+    const btn = document.createElement('button');
+
+    btn.type = 'button';
+    btn.className = 'number-pill';
+    btn.textContent = formatted;
+
+    if (soldNumbers.has(formatted)) {
+      btn.classList.add('sold');
+      btn.disabled = true;
+    } else {
+      btn.onclick = () => toggleNumber(formatted, btn);
+    }
+
+    grid.appendChild(btn);
+  }
+
+  renderSalePreview();
+  renderSellerSales(sales);
+}
+
+function toggleNumber(number, element) {
+  if (selectedNumbers.has(number)) {
+    selectedNumbers.delete(number);
+    element.classList.remove('selected');
+  } else {
+    selectedNumbers.add(number);
+    element.classList.add('selected');
+  }
+
+  renderSalePreview();
+}
+
+function renderSalePreview() {
+  const qty = selectedNumbers.size;
+  const preview = document.getElementById('salePreview');
+
+  if (!qty) {
+    preview.textContent = 'Selecione os números para ver o total.';
+    return;
+  }
+
+  preview.textContent = `${qty} número(s) selecionado(s): ${Array.from(selectedNumbers).sort().join(', ')} | Total: ${money(qty * PRICE)}`;
+}
+
+async function saveSale() {
+  const comprador = document.getElementById('buyerName').value.trim();
+  const whatsapp = document.getElementById('buyerPhone').value.trim();
+  const pagamento = document.getElementById('paymentMethod').value;
+  const numeros = Array.from(selectedNumbers).sort();
+
+  if (!comprador) {
+    return showToast('Preencha o nome do comprador.');
+  }
+
+  if (!whatsapp) {
+    return showToast('Preencha o WhatsApp do comprador.');
+  }
+
+  if (!numeros.length) {
+    return showToast('Selecione pelo menos um número.');
+  }
+
+  const btn = document.getElementById('saveSaleBtn');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Salvando...';
+
+  showLoading('Registrando venda...');
+
+  try {
+    await apiPost({
+      action: 'recordSale',
+      code: sellerCode,
+      comprador,
+      whatsapp,
+      numeros,
+      pagamento
+    });
+
+    document.getElementById('buyerName').value = '';
+    document.getElementById('buyerPhone').value = '';
+
+    selectedNumbers.clear();
+
+    showToast('Venda registrada com sucesso!');
+
+    await reloadSeller();
+    await loadPublicState();
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar venda';
+
+    hideLoading();
+  }
+}
+
+function renderSellerSales(sales) {
+  const el = document.getElementById('sellerSalesTable');
+
+  if (!sales.length) {
+    el.innerHTML = '<div class="empty">Nenhuma venda registrada ainda.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Comprador</th>
+          <th>WhatsApp</th>
+          <th>Números</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sales.map(s => `
+          <tr>
+            <td>${s.data || '-'}</td>
+            <td>${escapeHtml(s.comprador)}</td>
+            <td>${escapeHtml(s.whatsapp)}</td>
+            <td>${escapeHtml(s.numeros)}</td>
+            <td>${money(Number(s.quantidade || 0) * PRICE)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function adminLogin() {
+  adminPin = document.getElementById('adminPin').value.trim();
+
+  if (!adminPin) {
+    return showToast('Digite o PIN do administrador.');
+  }
+
+  localStorage.setItem('acaoSolidariaAdminPin', adminPin);
+  await loadAdminState(true);
+}
+
+async function loadAdminState(goToPanel = false) {
+  showLoading('Carregando painel do administrador...');
+
+  try {
+    const data = await apiGet({
+      action: 'adminState',
+      adminPin
+    });
+
+    adminState = data;
+
+    renderAdmin();
+
+    if (goToPanel) {
+      showPanel('admin');
+    }
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+function logoutAdmin() {
+  localStorage.removeItem('acaoSolidariaAdminPin');
+
+  adminPin = '';
+  adminState = null;
+
+  document.getElementById('adminPin').value = '';
+  showPanel('adminLogin');
+}
+
+function renderAdmin() {
+  const vendors = adminState.vendors || [];
+  const sales = adminState.sales || [];
+
+  const soldNumbers = new Set();
+  const byVendor = new Map();
+
+  vendors.forEach(v => {
+    byVendor.set(v.id, {
+      vendor: v,
+      qty: 0,
+      amount: 0
+    });
+  });
+
+  sales.forEach(s => {
+    String(s.numeros || '')
+      .split(',')
+      .map(n => n.trim())
+      .filter(Boolean)
+      .forEach(n => soldNumbers.add(n));
+
+    const item = byVendor.get(s.vendedorId);
+
+    if (item) {
+      item.qty += Number(s.quantidade || 0);
+      item.amount += Number(s.quantidade || 0) * PRICE;
+    }
+  });
+
+  const ranking = Array.from(byVendor.values()).sort((a, b) => b.qty - a.qty);
+  const top = ranking.find(r => r.qty > 0);
+  const soldCount = soldNumbers.size;
+
+  document.getElementById('adminAmount').textContent = money(soldCount * PRICE);
+  document.getElementById('adminSold').textContent = soldCount;
+  document.getElementById('adminAvailable').textContent = TOTAL_NUMBERS - soldCount;
+  document.getElementById('adminTopSeller').textContent = top ? `${top.vendor.nome} (${top.qty})` : '-';
+
+  renderLotSelect(vendors);
+  renderRanking(ranking);
+  renderVendors(vendors, byVendor);
+  renderSales(sales);
+
+  updateHome({ soldCount });
+}
+
+function renderLotSelect(vendors) {
+  const usedLots = new Set(vendors.map(v => Number(v.lote)));
+  const select = document.getElementById('vendorLot');
+
+  select.innerHTML = '';
+
+  for (let lot = 1; lot <= TOTAL_LOTS; lot++) {
+    if (usedLots.has(lot)) continue;
+
+    const start = (lot - 1) * LOT_SIZE + 1;
+    const end = lot * LOT_SIZE;
+
+    const option = document.createElement('option');
+
+    option.value = lot;
+    option.textContent = `Lote ${lot} — ${formatNumber(start)} a ${formatNumber(end)}`;
+
+    select.appendChild(option);
+  }
+
+  if (!select.options.length) {
+    const option = document.createElement('option');
+
+    option.value = '';
+    option.textContent = 'Todos os lotes foram cadastrados';
+
+    select.appendChild(option);
+  }
+}
+
+async function createVendor() {
+  const nome = document.getElementById('vendorName').value.trim();
+  const whatsapp = document.getElementById('vendorPhone').value.trim();
+  const lote = document.getElementById('vendorLot').value;
+
+  if (!nome) {
+    return showToast('Preencha o nome do vendedor.');
+  }
+
+  if (!lote) {
+    return showToast('Escolha um lote disponível.');
+  }
+
+  showLoading('Cadastrando vendedor...');
+
+  try {
+    const data = await apiPost({
+      action: 'createVendor',
+      adminPin,
+      nome,
+      whatsapp,
+      lote
+    });
+
+    document.getElementById('vendorName').value = '';
+    document.getElementById('vendorPhone').value = '';
+
+    showToast(`Vendedor cadastrado! Código: ${data.vendor.codigo}`);
+
+    await loadAdminState();
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+function renderRanking(ranking) {
+  const el = document.getElementById('rankingTable');
+  const active = ranking.filter(r => r.qty > 0);
+
+  if (!active.length) {
+    el.innerHTML = '<div class="empty">Nenhuma venda registrada ainda.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Vendedor</th>
+          <th>Vendas</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${active.map((r, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(r.vendor.nome)}</td>
+            <td>${r.qty}</td>
+            <td>${money(r.amount)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderVendors(vendors, byVendor) {
+  const el = document.getElementById('vendorsTable');
+
+  if (!vendors.length) {
+    el.innerHTML = '<div class="empty">Cadastre o primeiro vendedor para começar.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Vendedor</th>
+          <th>WhatsApp</th>
+          <th>Código</th>
+          <th>Lote</th>
+          <th>Vendidos</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${vendors.map(v => {
+          const stats = byVendor.get(v.id) || {
+            qty: 0,
+            amount: 0
+          };
+
+          return `
+            <tr>
+              <td>${escapeHtml(v.nome)}</td>
+              <td>${escapeHtml(v.whatsapp || '-')}</td>
+              <td>
+                <span class="tag">${escapeHtml(v.codigo)}</span>
+                <button class="btn small" onclick="copyText('${escapeHtml(v.codigo)}', 'Código copiado!')">
+                  Copiar
+                </button>
+              </td>
+              <td>${formatNumber(v.inicio)} a ${formatNumber(v.fim)}</td>
+              <td>${stats.qty}</td>
+              <td>${money(stats.amount)}</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSales(sales) {
+  const el = document.getElementById('salesTable');
+
+  if (!sales.length) {
+    el.innerHTML = '<div class="empty">Nenhuma venda registrada ainda.</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Vendedor</th>
+          <th>Comprador</th>
+          <th>WhatsApp</th>
+          <th>Números</th>
+          <th>Valor</th>
+          <th>Pagamento</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sales.slice().reverse().map(s => `
+          <tr>
+            <td>${s.data || '-'}</td>
+            <td>${escapeHtml(s.vendedorNome)}</td>
+            <td>${escapeHtml(s.comprador)}</td>
+            <td>${escapeHtml(s.whatsapp)}</td>
+            <td>${escapeHtml(s.numeros)}</td>
+            <td>${money(Number(s.quantidade || 0) * PRICE)}</td>
+            <td>
+              <span class="tag green">${escapeHtml(s.pagamento || 'Pix')}</span>
+            </td>
+            <td>
+              <button class="btn small danger" onclick="deleteSale('${s.id}')">
+                Excluir
+              </button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function deleteSale(id) {
+  const ok = confirm('Tem certeza que deseja excluir esta venda? Os números ficarão disponíveis novamente.');
+
+  if (!ok) return;
+
+  showLoading('Excluindo venda...');
+
+  try {
+    await apiPost({
+      action: 'deleteSale',
+      adminPin,
+      id
+    });
+
+    showToast('Venda excluída.');
+
+    await loadAdminState();
+    await loadPublicState();
+  } catch (err) {
+    showToast(err.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+loadPublicState();
+
+    
+  </script>
+  <div id="loadingOverlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <p>Carregando...</p>
+</div>
+</body>
+</html>
