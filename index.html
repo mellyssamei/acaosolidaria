@@ -335,9 +335,15 @@
 
     .number-pill:hover { transform: translateY(-1px); border-color: rgba(214, 155, 58, .7); }
     .number-pill.selected { background: var(--brown); color: #fff; border-color: var(--brown); }
-    .number-pill.sold { background: #eee6dc; color: #9b8a7d; text-decoration: line-through; cursor: not-allowed; transform: none; }
-
-    table {
+.number-pill.sold {
+  background: #eee6dc;
+  color: #9b8a7d;
+  opacity: 0.45;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}    table {
       width: 100%;
       border-collapse: collapse;
       overflow: hidden;
@@ -444,6 +450,41 @@
       .nav-actions .btn { padding: 10px 12px; font-size: 13px; }
       table { display: block; overflow-x: auto; white-space: nowrap; }
     }
+
+    .confirmation-box {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fff8ed;
+  border: 1px solid rgba(75, 46, 31, 0.14);
+  box-shadow: 0 10px 25px rgba(75, 46, 31, 0.08);
+}
+
+.confirmation-box h3 {
+  margin: 0 0 6px;
+  color: #4b2e1f;
+}
+
+.confirmation-box p {
+  margin: 0 0 12px;
+  color: #6f6258;
+  line-height: 1.5;
+}
+
+.confirmation-box textarea {
+  width: 100%;
+  min-height: 170px;
+  resize: vertical;
+  border: 1px solid rgba(75, 46, 31, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3c2a1e;
+  background: #ffffff;
+  outline: none;
+  margin-bottom: 12px;
+}
   </style>
 </head>
 <body>
@@ -567,6 +608,17 @@
           </div>
           <div class="notice" style="margin-bottom:14px;" id="salePreview">Selecione os números para ver o total.</div>
           <button id="saveSaleBtn" class="btn green full" onclick="saveSale()">Salvar venda</button>
+
+          <div id="confirmationBox" class="confirmation-box hidden">
+  <h3>Mensagem para enviar ao comprador</h3>
+  <p>Copie a mensagem abaixo e envie para a pessoa confirmar os números comprados.</p>
+
+  <textarea id="confirmationMessage" readonly></textarea>
+
+  <button class="btn primary" onclick="copyConfirmationMessage()">
+    Copiar mensagem
+  </button>
+</div>
         </div>
       </div>
 
@@ -683,6 +735,27 @@ function money(value) {
 
 function formatNumber(n) {
   return String(n).padStart(3, '0');
+}
+
+function normalizeNumber(value) {
+  const onlyNumbers = String(value || '').replace(/\D/g, '');
+
+  if (!onlyNumbers) {
+    return '';
+  }
+
+  return formatNumber(Number(onlyNumbers));
+}
+
+function extractSoldNumbers(value) {
+  if (Array.isArray(value)) {
+    return value.flatMap(item => extractSoldNumbers(item));
+  }
+
+  return String(value || '')
+    .split(/[,;|\s]+/)
+    .map(normalizeNumber)
+    .filter(Boolean);
 }
 
 function showToast(message) {
@@ -884,8 +957,12 @@ function logoutSeller() {
 function renderSeller() {
   const vendor = sellerState.vendor;
   const sales = sellerState.sales || [];
-  const soldNumbers = new Set((sellerState.soldNumbers || []).map(String));
+const rawSoldNumbers =
+  sellerState.soldNumbers && sellerState.soldNumbers.length
+    ? sellerState.soldNumbers
+    : sales.map(s => s.numeros);
 
+const soldNumbers = new Set(extractSoldNumbers(rawSoldNumbers));
   const soldCount = soldNumbers.size;
   const available = LOT_SIZE - soldCount;
   const amount = soldCount * PRICE;
@@ -946,6 +1023,53 @@ function renderSalePreview() {
   preview.textContent = `${qty} número(s) selecionado(s): ${Array.from(selectedNumbers).sort().join(', ')} | Total: ${money(qty * PRICE)}`;
 }
 
+const DRAW_DATE = '29/08';
+
+function formatDateTimeBR(date = new Date()) {
+  return date.toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function buildConfirmationMessage(comprador, numeros) {
+  const dataHora = formatDateTimeBR();
+  const listaNumeros = numeros.join(', ');
+
+  return `Olá, ${comprador}! Tudo bem?
+
+Você comprou no dia ${dataHora} o(s) número(s): ${listaNumeros}.
+
+Sua participação na Ação Solidária pelo Elias foi registrada com sucesso.
+
+A data do sorteio será dia ${DRAW_DATE}.
+
+Que Deus te abençoe! Muito obrigada por ajudar nessa causa. 🙏`;
+}
+
+function showConfirmationMessage(comprador, numeros) {
+  const box = document.getElementById('confirmationBox');
+  const textarea = document.getElementById('confirmationMessage');
+
+  if (!box || !textarea) return;
+
+  textarea.value = buildConfirmationMessage(comprador, numeros);
+  box.classList.remove('hidden');
+}
+
+async function copyConfirmationMessage() {
+  const textarea = document.getElementById('confirmationMessage');
+
+  if (!textarea || !textarea.value) {
+    return showToast('Nenhuma mensagem para copiar.');
+  }
+
+  await copyText(textarea.value, 'Mensagem copiada!');
+}
+
 async function saveSale() {
   const comprador = document.getElementById('buyerName').value.trim();
   const whatsapp = document.getElementById('buyerPhone').value.trim();
@@ -990,12 +1114,14 @@ async function saveSale() {
 
     await reloadSeller();
     await loadPublicState();
+
+    showConfirmationMessage(comprador, numeros);
+
   } catch (err) {
     showToast(err.message);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Salvar venda';
-
     hideLoading();
   }
 }
